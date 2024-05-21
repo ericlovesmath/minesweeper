@@ -1,0 +1,18 @@
+.cell {
+  margin: 0.1rem;
+  border-radius: 4px;
+  background-color: gray;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+}
+
+.cell.revealed {
+  background-color: lightgray;
+}
