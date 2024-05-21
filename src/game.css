@@ -1,18 +1,29 @@
 .cell {
   margin: 0.1rem;
   border-radius: 4px;
-  background-color: gray;
+  background-color: darkgray;
   width: 2rem;
   height: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.2s;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
 }
 
 .row {
   display: flex;
 }
 
+.cell.hidden:hover {
+  background-color: gray;
+}
+
 .cell.revealed {
   background-color: lightgray;
+}
+
+.cell.revealed.mine {
+  background-color: indianred;
 }

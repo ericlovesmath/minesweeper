@@ -14,9 +14,12 @@ interface CellProps {
 }
 
 function Cell({ onClick, onContextMenu, isMine, count, state }: CellProps) {
-
   return (
-    <div className={"cell " + state} onClick={onClick} onContextMenu={onContextMenu}>
+    <div
+      className={"cell " + (isMine ? "mine " : "") + state}
+      onClick={onClick}
+      onContextMenu={onContextMenu}
+    >
       {state == CellState.Flagged
         ? "🚩"
         : state == CellState.Hidden || count == 0

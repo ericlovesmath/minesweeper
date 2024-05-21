@@ -1,6 +1,7 @@
 import "./game.css";
 import { Cell, CellState } from "./Cell";
 import { useState } from "react";
+import { Howl } from "howler";
 
 interface GameProps {
   nrows: number;
@@ -10,6 +11,8 @@ interface GameProps {
 
 function Game({ nrows, ncols, nmines }: GameProps) {
   const [board, setBoard] = useState(initBoard());
+
+  const click = new Howl({ src: ["sound/click.wav"] });
 
   function neighbors(x: number, y: number) {
     const cells = [];
@@ -50,14 +53,28 @@ function Game({ nrows, ncols, nmines }: GameProps) {
     return board;
   }
 
+  function endGame() {
+    for (let x = 0; x < nrows; x += 1) {
+      for (let y = 0; y < ncols; y += 1) {
+        if (board[x][y].isMine) {
+          board[x][y].state = CellState.Revealed;
+        }
+      }
+    }
+    setBoard([...board]);
+  }
+
   function revealCell(x: number, y: number) {
     if (board[x][y].state != CellState.Hidden) {
       return;
     }
-    board[x][y].state = CellState.Revealed;
+
     if (board[x][y].isMine) {
-      console.log("BOOM");
+      endGame();
+      return;
     }
+
+    board[x][y].state = CellState.Revealed;
     if (board[x][y].count == 0) {
       for (const cell of neighbors(x, y)) {
         revealCell(cell.x, cell.y);
@@ -72,7 +89,6 @@ function Game({ nrows, ncols, nmines }: GameProps) {
     } else if (board[x][y].state == CellState.Flagged) {
       board[x][y].state = CellState.Hidden;
     }
-    console.log(board[x][y].state);
     setBoard([...board]);
   }
 
@@ -83,6 +99,7 @@ function Game({ nrows, ncols, nmines }: GameProps) {
           key={y}
           onClick={(e) => {
             e.preventDefault();
+            click.play();
             revealCell(x, y);
           }}
           onContextMenu={(e) => {
