@@ -1,6 +1,6 @@
 import "./game.css";
 import { Cell, CellState } from "./Cell";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Howl } from "howler";
 
 interface GameProps {
@@ -12,6 +12,10 @@ interface GameProps {
 function Game({ nrows, ncols, nmines }: GameProps) {
   const [board, setBoard] = useState(initBoard());
   const [gameOver, setGameOver] = useState(false);
+
+  useEffect(() => {
+    setBoard(initBoard());
+  }, [nrows, ncols, nmines]);
 
   const click = new Howl({ src: ["sound/click.wav"] });
 
@@ -29,6 +33,7 @@ function Game({ nrows, ncols, nmines }: GameProps) {
   }
 
   function initBoard() {
+    console.log(nrows, ncols, nmines);
     const board = [...Array(nrows).keys()].map((_) =>
       [...Array(ncols).keys()].map((_) => ({
         isMine: false,
