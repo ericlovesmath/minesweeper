@@ -11,6 +11,7 @@ interface GameProps {
 
 function Game({ nrows, ncols, nmines }: GameProps) {
   const [board, setBoard] = useState(initBoard());
+  const [gameOver, setGameOver] = useState(false);
 
   const click = new Howl({ src: ["sound/click.wav"] });
 
@@ -62,6 +63,18 @@ function Game({ nrows, ncols, nmines }: GameProps) {
       }
     }
     setBoard([...board]);
+    setGameOver(true);
+  }
+
+  function isGameWon() {
+    for (const row of board) {
+      for (const cell of row) {
+        if (cell.state == CellState.Hidden && !cell.isMine) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   function revealCell(x: number, y: number) {
@@ -81,6 +94,11 @@ function Game({ nrows, ncols, nmines }: GameProps) {
       }
     }
     setBoard([...board]);
+
+    if (isGameWon()) {
+      setGameOver(true);
+      return;
+    }
   }
 
   function flagCell(x: number, y: number) {
@@ -92,28 +110,47 @@ function Game({ nrows, ncols, nmines }: GameProps) {
     setBoard([...board]);
   }
 
-  return board.map((row, x) => (
-    <div className="row" key={x}>
-      {row.map((cell, y) => (
-        <Cell
-          key={y}
-          onClick={(e) => {
-            e.preventDefault();
-            click.play();
-            revealCell(x, y);
-          }}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            flagCell(x, y);
-          }}
-          pos={{ x, y }}
-          isMine={cell.isMine}
-          count={cell.count}
-          state={cell.state}
-        />
+  return (
+    <div className="game">
+      {board.map((row, x) => (
+        <div className="row" key={x}>
+          {row.map((cell, y) => (
+            <Cell
+              key={y}
+              onClick={(e) => {
+                e.preventDefault();
+                if (!gameOver) {
+                  click.play();
+                  revealCell(x, y);
+                }
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                if (!gameOver) {
+                  flagCell(x, y);
+                }
+              }}
+              pos={{ x, y }}
+              isMine={cell.isMine}
+              count={cell.count}
+              state={cell.state}
+            />
+          ))}
+        </div>
       ))}
+      {gameOver && (
+        <button
+          className="restart"
+          onClick={() => {
+            setBoard(initBoard());
+            setGameOver(false);
+          }}
+        >
+          Restart
+        </button>
+      )}
     </div>
-  ));
+  );
 }
 
 export default Game;
